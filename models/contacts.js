@@ -1,6 +1,13 @@
-// const fs = require('fs/promises')
+const fs = require('fs/promises')
 
-const listContacts = async () => {}
+const listContacts = async () => {
+  try {
+    const content = await fs.readFile("./contacts.json", "utf-8");
+    console.log("Contenido del archivo:", content);
+  } catch (error) {
+    console.error("Error al leer el archivo:", error);
+  }
+}
 
 const getContactById = async (contactId) => {}
 
