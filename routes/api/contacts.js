@@ -11,8 +11,8 @@ router.get("/", async (req, res, next) => {
       res.status(202).json({ contacts });
     })
     .catch((error) => {
-      console.error("Error al listar contactos:", error);
-      res.status(404).json({ message: "Error al listar contactos:" });
+      console.error("Error: Contact list NOT FOUND:", error);
+      res.status(404).json({ message: "Error: Contact list NOT FOUND" });
     });
 });
 
@@ -27,16 +27,18 @@ router.get("/:contactId", async (req, res, next) => {
       if (data.id === -1) {
         res
           .status(404)
-          .json({ message: `No hay contactos con el ID: ${contactId}` });
+          .json({ message: `There is no Contact with the ID: ${contactId}` });
       } else {
-        res.status(200).json({ message: "Contacto encontrado", data });
+        res.status(200).json({ message: "Contact FOUND: OK", data });
       }
     })
     .catch((error) => {
-      console.error("Error al listar contactos:", error);
-      res.status(404).json({ message: "Error al listar contactos:" });
+      console.error("Error: Contact list NOT FOUND", error);
+      res.status(404).json({ message: "Error: Contact list NOT FOUND" });
     });
 });
+
+// /////////////////
 
 router.post("/", async (req, res, next) => {
   const dataFromBody = req.body;
@@ -48,26 +50,50 @@ router.post("/", async (req, res, next) => {
     const value = (await result).value;
 
     if (error) {
-      console.log("Operación exitosa:", error);
-      res.status(404).json({ message: error.details });
+      res.status(400).json({ message: error.details });
     } else {
-      console.log("Valid User:", value);
-      res.status(200).json({ message: value });
-    }
+      console.log("Successful validation:");
 
+      const newContact = await contac.addContact(value);  
+      
+      res.status(201).json({ message: newContact });
+    }
   } catch (error) {
     console.error("Error:", error);
     res.status(404).json({ message: error.details });
   }
-
 });
 
 router.delete("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  
+  const id = req.params.contactId;
+  
+  const response = await contac.removeContact(id);
+
+ 
+  if (response !== -1) {
+    console.log("se borro el contacto " + response);
+    res.status(200).json({ message: "contact deleted" });
+  } else {
+    console.log("no se encontró el contacto con el id " + id);
+    res.status(404).json({ message: "CONTACT NOT FOUND" });
+  }
+  
 });
 
 router.put("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+
+  const contactId = req.params.contactId;
+  const dataFromBody = req.body;
+
+  const result = await contac.updateContact(contactId, dataFromBody);
+
+  if (result !== -1) {
+    res.status(200).json({ message: "UPDATED Contact" });  
+  } else {
+    res.status(400).json({ message: "Contact NOT FOUND" });
+  }
+
 });
 
 module.exports = router;
