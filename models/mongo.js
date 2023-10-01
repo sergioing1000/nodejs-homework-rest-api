@@ -1,14 +1,14 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 
+let contactModel = {};
 
-const Mconnect = async () => {
+(async () => {
 
-  const contactSchema = new mongoose.Schema(
-    {
+  const contactSchema = new mongoose.Schema({
     name: {
       type: String,
-      required: [true, 'Set name for contact'],
+      required: [true, "Set name for contact"],
     },
     email: {
       type: String,
@@ -20,23 +20,22 @@ const Mconnect = async () => {
       type: Boolean,
       default: false,
     },
-    });
-  
-  const contactModel = mongoose.model("Contact", contactSchema);
+  });
+
+  contactModel = mongoose.model("Contact", contactSchema);
 
   try {
-
-    await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(process.env.URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
     console.log("Database connection successful");
     return contactModel;
-
   } catch (error) {
     console.error("Conenction error ", error);
   }
 
-};
+})();
 
-module.exports = {
-  Mconnect
-};
+module.exports = contactModel;

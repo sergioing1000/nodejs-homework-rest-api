@@ -1,27 +1,12 @@
 const express = require("express");
 
 const contac = require("../../models/contacts.js");
-const mong = require("../../models/mongo.js");
+const contactModel = require("../../models/mongo.js");
 
 const router = express.Router();
 
-// async function connect () {
-//   try {
-    
-//     const contactModel = await mong.Mconnect(); 
-
-//     return contactModel;
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
-
-// global.contactModelG = connect();
-
 router.get("/", async (req, res, next ) => {
-  
-  const contactModel = await mong.Mconnect(); 
+    
 
   contac
     .listContacts(contactModel)
