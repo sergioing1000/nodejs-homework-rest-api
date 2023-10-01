@@ -1,15 +1,18 @@
 const fs = require("fs/promises");
 const Joi = require("joi");
 
-const listContacts = async () => {
-  try {
-    const content = await fs.readFile("./models/contacts.json", "utf-8");
+const listContacts = async (model) => {
 
-    const data = JSON.parse(content);
+  try {
+    
+    const data = await model.find({});
+
+    console.log("first");
+    console.log(data);
 
     return data;
   } catch (error) {
-    console.error("Error al leer el archivo:", error);
+    console.error("Error reading database:", error);
   }
 };
 

@@ -1,12 +1,30 @@
 const express = require("express");
 
 const contac = require("../../models/contacts.js");
+const mong = require("../../models/mongo.js");
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
+// async function connect () {
+//   try {
+    
+//     const contactModel = await mong.Mconnect(); 
+
+//     return contactModel;
+
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// global.contactModelG = connect();
+
+router.get("/", async (req, res, next ) => {
+  
+  const contactModel = await mong.Mconnect(); 
+
   contac
-    .listContacts()
+    .listContacts(contactModel)
     .then((contacts) => {
       res.status(202).json({ contacts });
     })
@@ -14,6 +32,7 @@ router.get("/", async (req, res, next) => {
       console.error("Error: Contact list NOT FOUND:", error);
       res.status(404).json({ message: "Error: Contact list NOT FOUND" });
     });
+  
 });
 
 router.get("/:contactId", async (req, res, next) => {
