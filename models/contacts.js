@@ -5,18 +5,22 @@ const listContacts = async (model) => {
 
   try {
     
-    const data = await model.find({});
+    const TotalQty = await model.countDocuments({});
+
+    const data = await model.find({}).limit(10);
 
     console.log("first");
     console.log(data);
 
-    return data;
+    return { TotalQty, data };
   } catch (error) {
     console.error("Error reading database:", error);
   }
 };
 
 const getContactById = async (contactId) => {
+
+  
   const receivedID = contactId.slice(1);
   console.log("el ID recivido es: " + receivedID);
 
