@@ -1,11 +1,13 @@
 const express = require("express");
+const router = express.Router();
 
 const contac = require("../../models/contacts.js");
 const contactModel = require("../../models/mongo.js");
+const { model } = require("mongoose");
 
-const router = express.Router();
 
-router.get("/", async (req, res, next) => {
+router.get('/', async (req, res, next) => {
+
   contac
     .listContacts(contactModel)
     .then((info) => {
@@ -17,15 +19,22 @@ router.get("/", async (req, res, next) => {
     });
 });
 
-router.get("/:contactId", async (req, res, next) => {
-  const contactId = req.params.contactId;
+// /////////////////
+
+router.get("/:id", async (req, res, next) => {
+  // const contactId = req.query.id;
+  let contactId = req.params.id;
+
+  console.log("El parámetro id del contacto es",contactId);
+
+  contactId = contactId.slice(4);
 
   contac
-    .getContactById(contactId)
+    .getContactById(contactId, contactModel)
     .then((data) => {
       console.log(data);
 
-      if (data.id === -1) {
+      if (data === null ) {
         res
           .status(404)
           .json({ message: `There is no Contact with the ID: ${contactId}` });
@@ -51,11 +60,12 @@ router.post("/", async (req, res, next) => {
     const value = (await result).value;
 
     if (error) {
+      console.log("Validation Failed...")
       res.status(400).json({ message: error.details });
     } else {
       console.log("Successful validation:");
 
-      const newContact = await contac.addContact(value);
+      const newContact = await contac.addContact(value, contactModel);
 
       res.status(201).json({ message: newContact });
     }
@@ -65,7 +75,9 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+// /////////////////
+
+router.delete("/contacts/:id", async (req, res, next) => {
   const id = req.params.contactId;
 
   const response = await contac.removeContact(id);
@@ -79,7 +91,9 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+// /////////////////
+
+router.put("/contacts/:contactId", async (req, res, next) => {
   const contactId = req.params.contactId;
   const dataFromBody = req.body;
 
@@ -91,5 +105,7 @@ router.put("/:contactId", async (req, res, next) => {
     res.status(400).json({ message: "Contact NOT FOUND" });
   }
 });
+
+// /////////////////
 
 module.exports = router;

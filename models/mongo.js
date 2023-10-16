@@ -5,6 +5,8 @@ let contactModel = {};
 
 (async () => {
 
+  // mongoose.set("bufferTimeoutMS", 45000);
+
   const contactSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -34,6 +36,7 @@ let contactModel = {};
     return contactModel;
   } catch (error) {
     console.error("Conenction error ", error);
+    process.exit(1);
   }
 
 })();

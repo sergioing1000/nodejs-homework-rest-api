@@ -1,16 +1,15 @@
 const fs = require("fs/promises");
 const Joi = require("joi");
 
-const listContacts = async (model) => {
 
+
+const listContacts = async (model) => {
   try {
-    
     const TotalQty = await model.countDocuments({});
 
     const data = await model.find({}).limit(10);
 
-    console.log("first");
-    console.log(data);
+    console.log("Total Quantiyt : " + TotalQty);    
 
     return { TotalQty, data };
   } catch (error) {
@@ -18,63 +17,53 @@ const listContacts = async (model) => {
   }
 };
 
-const getContactById = async (contactId) => {
+// ////////////////////////////////////////////////////////////
 
-  
-  const receivedID = contactId.slice(1);
-  console.log("el ID recivido es: " + receivedID);
+const getContactById = async (contactId, model) => {
+
+  console.log("el ID recivido es: " + contactId);
 
   try {
-    const content = await fs.readFile("./models/contacts.json", "utf-8");
 
-    const data = JSON.parse(content);
-    let contactFound = {};
-    let cFound = false;
+    const result = await model.findById(contactId);
 
-    data.forEach((element) => {
-      if (element.id === receivedID) {
-        contactFound = element;
-        console.log("si entro al if");
-        cFound = true;
-      }
-    });
-
-    console.log(contactFound);
-
-    if (cFound === true) {
-      return contactFound;
+    if (result) {
+      return result;
     } else {
-      contactFound.id = -1;
-      return contactFound;
+      console.log(
+        `No se encontró ningún contacto con "id" igual a: ${contactId}.`
+      );
+      return result;
     }
+    
   } catch (error) {
-    console.error("Error al leer el archivo:", error);
+    console.error("Error al buscar el documento:", error);
   }
 };
 
 // ///////////////////////////////////////////////////////////////////////////
 
-const addContact = async (newContact) => {
-  const newContactwID = {
-    id: generateRandomID(21),
-    ...newContact,
-  };
+const addContact = async (newContact, model) => {
+
+  
+  // const newContactwID = {
+  //   id: generateRandomID(21),
+  //   ...newContact,
+  // };
+
+  console.log("el nuevo contacto es:")
+  console.log(newContact);
 
   try {
-    const content = await fs.readFile("./models/contacts.json", "utf-8");
 
-    const contactos = JSON.parse(content);
-    contactos.push(newContactwID);
-    const newContent = JSON.stringify(contactos, null, 2);
-
-    await fs.writeFile("./models/contacts.json", newContent);
-
-    console.log("New contact succesfully added");
-    console.log(newContact);
+    await model.create(newContact);
+   
 
     return newContact;
   } catch (error) {
-    console.error("Error al leer el archivo:", error);
+
+    console.error("Error creating contact:", error);
+    
   }
 };
 
@@ -197,6 +186,7 @@ const validateContact = async (body) => {
     phone: Joi.string()
       .pattern(/^(\+1|1)?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/)
       .required(),
+    favorite: Joi.boolean().required(),
   });
 
   const { error, value } = schema.validate(body);
