@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
 // /////////////////
 
 router.get("/:id", async (req, res, next) => {
-  // const contactId = req.query.id;
+
   let contactId = req.params.id;
 
   console.log("El parámetro id del contacto es",contactId);
@@ -77,13 +77,18 @@ router.post("/", async (req, res, next) => {
 
 // /////////////////
 
-router.delete("/contacts/:id", async (req, res, next) => {
-  const id = req.params.contactId;
+router.delete("/:id", async (req, res, next) => {
 
-  const response = await contac.removeContact(id);
+  let contactId = req.params.id;
+  
+  contactId = contactId.slice(4);
+
+  console.log("El id a borrar es " + contactId);
+
+  const response = await contac.removeContact(contactId, contactModel);
 
   if (response !== -1) {
-    console.log("se borro el contacto " + response);
+    console.log("contact deleted " + response);
     res.status(200).json({ message: "contact deleted" });
   } else {
     console.log("no se encontró el contacto con el id " + id);

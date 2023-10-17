@@ -45,12 +45,6 @@ const getContactById = async (contactId, model) => {
 
 const addContact = async (newContact, model) => {
 
-  
-  // const newContactwID = {
-  //   id: generateRandomID(21),
-  //   ...newContact,
-  // };
-
   console.log("el nuevo contacto es:")
   console.log(newContact);
 
@@ -58,8 +52,8 @@ const addContact = async (newContact, model) => {
 
     await model.create(newContact);
    
-
     return newContact;
+
   } catch (error) {
 
     console.error("Error creating contact:", error);
@@ -69,43 +63,69 @@ const addContact = async (newContact, model) => {
 
 // ///////////////////////////////////////////////////////////////////////////
 
-const removeContact = async (contactId) => {
-  const receivedID = contactId.slice(1);
-  console.log("Received item to be deleted: " + receivedID);
+const removeContact = async (contactId, model) => {
+  
+  console.log("Received item to be deleted: " + contactId);
 
   try {
-    const content = await fs.readFile("./models/contacts.json", "utf-8");
 
-    let data = JSON.parse(content);
-    let contactFound = {};
-    let cFound = false;
 
-    data.forEach((element) => {
-      if (element.id === receivedID) {
-        contactFound = element;
-        cFound = true;
-        console.log("si se encontró el elemento a eliminar");
-        console.log(contactFound);
-      }
-    });
+    const result = await model.findByIdAndRemove(contactId);
 
-    if (cFound === true) {
-      data = data.filter(function (item) {
-        return item !== contactFound;
-      });
+    console.log("El resultado es:"+result);
 
-      const newContent = JSON.stringify(data, null, 2);
-
-      await fs.writeFile("./models/contacts.json", newContent);
-
-      console.table(newContent);
-
-      return contactFound;
+    if (result) {
+      return result;
     } else {
-      console.log("***NO*** se encontró el elemento a eliminar.");
-
-      return -1;
+      console.log(
+        `No se encontró ningún contacto con "id" igual a: ${contactId}.`
+      );
+      return result;
     }
+    
+
+
+
+
+
+
+
+
+
+    
+    // const content = await fs.readFile("./models/contacts.json", "utf-8");
+
+    // let data = JSON.parse(content);
+    // let contactFound = {};
+    // let cFound = false;
+
+    // data.forEach((element) => {
+    //   if (element.id === receivedID) {
+    //     contactFound = element;
+    //     cFound = true;
+    //     console.log("si se encontró el elemento a eliminar");
+    //     console.log(contactFound);
+    //   }
+    // });
+
+    // if (cFound === true) {
+    //   data = data.filter(function (item) {
+    //     return item !== contactFound;
+    //   });
+
+    //   const newContent = JSON.stringify(data, null, 2);
+
+    //   await fs.writeFile("./models/contacts.json", newContent);
+
+    //   console.table(newContent);
+
+    //   return contactFound;
+    // } else {
+    //   console.log("***NO*** se encontró el elemento a eliminar.");
+
+    //   return -1;
+    // }
+
   } catch (error) {
     console.error("Error al leer el archivo:", error);
   }
