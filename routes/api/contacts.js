@@ -87,30 +87,70 @@ router.delete("/:id", async (req, res, next) => {
 
   const response = await contac.removeContact(contactId, contactModel);
 
-  if (response !== -1) {
+  if (response !== null) {
     console.log("contact deleted " + response);
-    res.status(200).json({ message: "contact deleted" });
+    res
+      .status(200)
+      .json({ message: `contact DELETED!`, id : `${contactId}` });
   } else {
-    console.log("no se encontró el contacto con el id " + id);
-    res.status(404).json({ message: "CONTACT NOT FOUND" });
+    console.log("no se encontró el contacto con el id " + contactId);
+    res.status(404).json({ message: "CONTACT NOT FOUND", id: `${contactId}` });
   }
 });
 
 // /////////////////
 
-router.put("/contacts/:contactId", async (req, res, next) => {
-  const contactId = req.params.contactId;
+router.put("/:id", async (req, res, next) => {
+
+  let contactId = req.params.id;
+  contactId = contactId.slice(4);
+  
   const dataFromBody = req.body;
 
-  const result = await contac.updateContact(contactId, dataFromBody);
+  const result = await contac.updateContact(contactId, dataFromBody, contactModel);
 
-  if (result !== -1) {
-    res.status(200).json({ message: "UPDATED Contact" });
+  console.log("YYY")
+  console.log(result);
+  console.log("ZZZ");
+  console.log(result.id);
+
+  if (result.id !== undefined) {
+    res.status(200).json({ message: "UPDATED Contact", id: result.id});
   } else {
-    res.status(400).json({ message: "Contact NOT FOUND" });
+    res.status(400).json({ message: "Contact NOT Updated", error: result.answer });
   }
 });
 
 // /////////////////
+
+router.patch("/:id", async (req, res, next) => {
+  let contactId = req.params.id;
+  contactId = contactId.slice(4);
+
+  const dataFromBody = req.body;
+
+  const result = await contac.updateContact(
+    contactId,
+    dataFromBody,
+    contactModel
+  );
+
+  console.log("YYY");
+  console.log(result);
+  console.log("ZZZ");
+  console.log(result.id);
+
+  if (result.id !== undefined) {
+    res.status(200).json({ message: "UPDATED Contact", id: result.id });
+  } else {
+    res
+      .status(400)
+      .json({ message: "Contact NOT Updated", error: result.answer });
+  }
+});
+
+
+
+
 
 module.exports = router;

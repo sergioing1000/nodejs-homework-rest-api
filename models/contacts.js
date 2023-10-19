@@ -1,15 +1,13 @@
 const fs = require("fs/promises");
 const Joi = require("joi");
 
-
-
 const listContacts = async (model) => {
   try {
     const TotalQty = await model.countDocuments({});
 
     const data = await model.find({}).limit(10);
 
-    console.log("Total Quantiyt : " + TotalQty);    
+    console.log("Total Quantiyt : " + TotalQty);
 
     return { TotalQty, data };
   } catch (error) {
@@ -20,11 +18,9 @@ const listContacts = async (model) => {
 // ////////////////////////////////////////////////////////////
 
 const getContactById = async (contactId, model) => {
-
   console.log("el ID recivido es: " + contactId);
 
   try {
-
     const result = await model.findById(contactId);
 
     if (result) {
@@ -35,7 +31,6 @@ const getContactById = async (contactId, model) => {
       );
       return result;
     }
-    
   } catch (error) {
     console.error("Error al buscar el documento:", error);
   }
@@ -44,35 +39,27 @@ const getContactById = async (contactId, model) => {
 // ///////////////////////////////////////////////////////////////////////////
 
 const addContact = async (newContact, model) => {
-
-  console.log("el nuevo contacto es:")
+  console.log("el nuevo contacto es:");
   console.log(newContact);
 
   try {
-
     await model.create(newContact);
-   
+
     return newContact;
-
   } catch (error) {
-
     console.error("Error creating contact:", error);
-    
   }
 };
 
 // ///////////////////////////////////////////////////////////////////////////
 
 const removeContact = async (contactId, model) => {
-  
   console.log("Received item to be deleted: " + contactId);
 
   try {
-
-
     const result = await model.findByIdAndRemove(contactId);
 
-    console.log("El resultado es:"+result);
+    console.log("El resultado es:" + result);
 
     if (result) {
       return result;
@@ -82,50 +69,6 @@ const removeContact = async (contactId, model) => {
       );
       return result;
     }
-    
-
-
-
-
-
-
-
-
-
-    
-    // const content = await fs.readFile("./models/contacts.json", "utf-8");
-
-    // let data = JSON.parse(content);
-    // let contactFound = {};
-    // let cFound = false;
-
-    // data.forEach((element) => {
-    //   if (element.id === receivedID) {
-    //     contactFound = element;
-    //     cFound = true;
-    //     console.log("si se encontró el elemento a eliminar");
-    //     console.log(contactFound);
-    //   }
-    // });
-
-    // if (cFound === true) {
-    //   data = data.filter(function (item) {
-    //     return item !== contactFound;
-    //   });
-
-    //   const newContent = JSON.stringify(data, null, 2);
-
-    //   await fs.writeFile("./models/contacts.json", newContent);
-
-    //   console.table(newContent);
-
-    //   return contactFound;
-    // } else {
-    //   console.log("***NO*** se encontró el elemento a eliminar.");
-
-    //   return -1;
-    // }
-
   } catch (error) {
     console.error("Error al leer el archivo:", error);
   }
@@ -133,8 +76,7 @@ const removeContact = async (contactId, model) => {
 
 // ///////////////////////////////////////////////////////////////////////////
 
-const updateContact = async (contactId, body) => {
-  contactId = contactId.slice(1);
+const updateContact = async (contactId, body, model) => {
 
   const result = validateContact(body);
 
@@ -144,37 +86,66 @@ const updateContact = async (contactId, body) => {
   if (error) {
     console.log("error al validación de datos..");
     console.log(error.details);
-    return -1;
+    const answer = error.details;    
+    return {answer};
   } else {
-    console.log(contactId);
 
-    const content = await fs.readFile("./models/contacts.json", "utf-8");
+    const name = value.name;
+    const email = value.email;
+    const phone = value.phone;
+    const favorite = value.favorite;
 
-    const data = JSON.parse(content);
-    let contactFound = {};
-    let cFound = false;
+    try {
 
-    data.forEach((element) => {
-      if (element.id === contactId) {
-        cFound = true;
-        console.log("si se encontró el elemento a modificar");
-        element.name = body.name;
-        element.email = body.email;
-        element.phone = body.phone;
+      const updatedContact = await model.findByIdAndUpdate(
+        contactId,
+        { name, email, phone, favorite },
+        { new: true }
+      );
+
+      console.log("XXX");
+      console.log(updatedContact);
+
+
+      if (updatedContact) {
+        return updatedContact;
+      } else {
+        console.log(
+          `No se encontró ningún contacto con "id" igual a: ${contactId}.`
+        );
+        return result;
       }
-    });
-
-    if (cFound === true) {
-      const newContent = JSON.stringify(data, null, 2);
-
-      await fs.writeFile("./models/contacts.json", newContent);
-
-      return 1;
-    } else {
-      console.log("***NO*** se encontró el elemento a modificar.");
-
-      return -1;
+    } catch (error) {
+      console.error("Error al leer la base de datos:", error);
     }
+
+    // const content = await fs.readFile("./models/contacts.json", "utf-8");
+
+    // const data = JSON.parse(content);
+    // let contactFound = {};
+    // let cFound = false;
+
+    // data.forEach((element) => {
+    //   if (element.id === contactId) {
+    //     cFound = true;
+    //     console.log("si se encontró el elemento a modificar");
+    //     element.name = body.name;
+    //     element.email = body.email;
+    //     element.phone = body.phone;
+    //   }
+    // });
+
+    // if (cFound === true) {
+    //   const newContent = JSON.stringify(data, null, 2);
+
+    //   await fs.writeFile("./models/contacts.json", newContent);
+
+    //   return 1;
+    // } else {
+    //   console.log("***NO*** se encontró el elemento a modificar.");
+
+    //   return -1;
+    // }
   }
 };
 
