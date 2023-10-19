@@ -109,10 +109,6 @@ router.put("/:id", async (req, res, next) => {
 
   const result = await contac.updateContact(contactId, dataFromBody, contactModel);
 
-  console.log("YYY")
-  console.log(result);
-  console.log("ZZZ");
-  console.log(result.id);
 
   if (result.id !== undefined) {
     res.status(200).json({ message: "UPDATED Contact", id: result.id});
@@ -123,30 +119,105 @@ router.put("/:id", async (req, res, next) => {
 
 // /////////////////
 
-router.patch("/:id", async (req, res, next) => {
+router.patch("/:id/favorite", async (req, res, next) => {
+
+
+
+  const updateC = async (contactId, data) => {
+    try {
+      const result = await contac.updateContact(contactId, data, contactModel);
+
+      if (result.id !== undefined) {
+        res.status(200).json({ message: "UPDATED Contact", id: result.id });
+      } else {
+        res
+          .status(400)
+          .json({ message: "Contact NOT Updated", error: result.answer });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
   let contactId = req.params.id;
   contactId = contactId.slice(4);
 
+  // res.status(200).json({ message: "Favorite", id: contactId });
+
   const dataFromBody = req.body;
 
-  const result = await contac.updateContact(
-    contactId,
-    dataFromBody,
-    contactModel
-  );
+  
 
-  console.log("YYY");
-  console.log(result);
-  console.log("ZZZ");
-  console.log(result.id);
+  if (isEmpty(dataFromBody)) {
+  
+    res.status(400).json({ message: "missing field favorite" });
 
-  if (result.id !== undefined) {
-    res.status(200).json({ message: "UPDATED Contact", id: result.id });
   } else {
-    res
-      .status(400)
-      .json({ message: "Contact NOT Updated", error: result.answer });
+
+    console.log(contactId);
+
+    contac
+      .getContactById(contactId, contactModel)
+      .then((data) => {
+        console.log(data);
+
+        if (data === null) {
+          res
+            .status(404)
+            .json({ message: `There is no Contact with the ID: ${contactId}` });
+        } else {
+
+          const updatedContact = {};
+          
+          updatedContact.name = data.name;
+          updatedContact.email = data.email;
+          updatedContact.phone = data.phone;
+          updatedContact.favorite = dataFromBody.favorite;
+
+          updateC(contactId, updatedContact);
+          
+        }
+      })
+      .catch((error) => {
+        console.error("Error: Contact list NOT FOUND", error);
+        res.status(404).json({ message: "Error: Contact list NOT FOUND" });
+      });
+
   }
+
+  
+  
+  
+
+  // const dataFromBody = req.body;
+
+  // const result = await contac.updateContact(
+  //   contactId,
+  //   dataFromBody,
+  //   contactModel
+  // );
+
+  // console.log("YYY");
+  // console.log(result);
+  // console.log("ZZZ");
+  // console.log(result.id);
+
+  // if (result.id !== undefined) {
+  //   res.status(200).json({ message: "UPDATED Contact", id: result.id });
+  // } else {
+  //   res
+  //     .status(400)
+  //     .json({ message: "Contact NOT Updated", error: result.answer });
+  // }
+
+
+
 });
 
 

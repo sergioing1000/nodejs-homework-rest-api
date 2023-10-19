@@ -103,9 +103,6 @@ const updateContact = async (contactId, body, model) => {
         { new: true }
       );
 
-      console.log("XXX");
-      console.log(updatedContact);
-
 
       if (updatedContact) {
         return updatedContact;
@@ -119,33 +116,7 @@ const updateContact = async (contactId, body, model) => {
       console.error("Error al leer la base de datos:", error);
     }
 
-    // const content = await fs.readFile("./models/contacts.json", "utf-8");
 
-    // const data = JSON.parse(content);
-    // let contactFound = {};
-    // let cFound = false;
-
-    // data.forEach((element) => {
-    //   if (element.id === contactId) {
-    //     cFound = true;
-    //     console.log("si se encontró el elemento a modificar");
-    //     element.name = body.name;
-    //     element.email = body.email;
-    //     element.phone = body.phone;
-    //   }
-    // });
-
-    // if (cFound === true) {
-    //   const newContent = JSON.stringify(data, null, 2);
-
-    //   await fs.writeFile("./models/contacts.json", newContent);
-
-    //   return 1;
-    // } else {
-    //   console.log("***NO*** se encontró el elemento a modificar.");
-
-    //   return -1;
-    // }
   }
 };
 
