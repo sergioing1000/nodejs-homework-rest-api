@@ -125,7 +125,7 @@ router.patch("/:id/favorite", async (req, res, next) => {
 
   const updateC = async (contactId, data) => {
     try {
-      const result = await contac.updateContact(contactId, data, contactModel);
+      const result = await contac.updateContact2(contactId, data, contactModel);
 
       if (result.id !== undefined) {
         res.status(200).json({ message: "UPDATED Contact", id: result.id });
@@ -152,6 +152,7 @@ router.patch("/:id/favorite", async (req, res, next) => {
 
   const dataFromBody = req.body;
 
+  
   
 
   if (isEmpty(dataFromBody)) {
@@ -192,36 +193,11 @@ router.patch("/:id/favorite", async (req, res, next) => {
   }
 
   
-  
-  
-
-  // const dataFromBody = req.body;
-
-  // const result = await contac.updateContact(
-  //   contactId,
-  //   dataFromBody,
-  //   contactModel
-  // );
-
-  // console.log("YYY");
-  // console.log(result);
-  // console.log("ZZZ");
-  // console.log(result.id);
-
-  // if (result.id !== undefined) {
-  //   res.status(200).json({ message: "UPDATED Contact", id: result.id });
-  // } else {
-  //   res
-  //     .status(400)
-  //     .json({ message: "Contact NOT Updated", error: result.answer });
-  // }
-
 
 
 });
 
-
-
+// /////////////////
 
 
 module.exports = router;
