@@ -148,13 +148,9 @@ router.patch("/:id/favorite", async (req, res, next) => {
   let contactId = req.params.id;
   contactId = contactId.slice(4);
 
-  // res.status(200).json({ message: "Favorite", id: contactId });
-
   const dataFromBody = req.body;
 
   
-  
-
   if (isEmpty(dataFromBody)) {
   
     res.status(400).json({ message: "missing field favorite" });
